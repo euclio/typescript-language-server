@@ -318,6 +318,19 @@ export class LspServer {
         if (result.body[0] && result.body[0].documentation) {
             item.documentation = result.body[0].documentation.map(i => i.text).join('\n');
         }
+
+        const additionalTextEdits: lsp.TextEdit[] = [];
+
+        for (const codeAction of result.body[0].codeActions) {
+            for (const change of codeAction.changes) {
+                for (const textChange of change.textChanges) {
+                    additionalTextEdits.push(toTextEdit(textChange));
+                }
+            }
+        }
+
+        item.additionalTextEdits = additionalTextEdits;
+
         return item;
     }
 
